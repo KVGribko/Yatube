@@ -1,7 +1,6 @@
 from core.models import CreatedModel
 from django.contrib.auth import get_user_model
 from django.db import models
-
 User = get_user_model()
 
 
@@ -60,14 +59,12 @@ class Comment(CreatedModel):
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        null=True,
         related_name='comments',
         verbose_name='пост',
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        null=True,
         related_name='comments',
         verbose_name='автор',
     )
@@ -83,3 +80,30 @@ class Comment(CreatedModel):
 
     def __str__(self):
         return self.text[:15]
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='подписчик',
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='автор',
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'user'],
+                name='unique_following'
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('author')),
+                name='cant subscribe to yourself',
+            ),
+        ]

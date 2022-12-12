@@ -54,7 +54,7 @@ class PostURLTest(TestCase):
             self.GROUP_LIST: HTTPStatus.OK,
             self.PROFILE: HTTPStatus.OK,
             self.POST_DETAIL: HTTPStatus.OK,
-            self.UNEXISTING_PAGE: HTTPStatus.NOT_FOUND
+            self.UNEXISTING_PAGE: HTTPStatus.NOT_FOUND,
         }
 
         for url, status_code in url_code.items():
@@ -70,7 +70,8 @@ class PostURLTest(TestCase):
             self.PROFILE: 'posts/profile.html',
             self.POST_DETAIL: 'posts/post_detail.html',
             self.POST_EDIT: 'posts/create_post.html',
-            self.CREATE: 'posts/create_post.html'
+            self.CREATE: 'posts/create_post.html',
+            self.UNEXISTING_PAGE: 'core/404.html',
         }
 
         for url, template in url_templates_names.items():

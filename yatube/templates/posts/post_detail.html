@@ -15,13 +15,13 @@
     <aside class="col-12 col-md-3">
       <ul class="list-group list-group-flush">
         <li class="list-group-item">
-          Дата публикации: {{ post.pub_date|date:"d E Y" }}
+          Дата публикации: {{ post.created|date:"d E Y" }}
         </li>
         {% if post.group is not None %}
           <li class="list-group-item">
-            Группа: {{ post.group.title }}
+            Группа:
           <a href="{% url 'posts:group_list' post.group.slug %}">
-            все записи группы
+            {{ post.group.title }}
           </a>
           </li>
         {% endif %}
