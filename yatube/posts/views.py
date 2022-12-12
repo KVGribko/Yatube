@@ -4,15 +4,12 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm, PostForm
-from .models import Group, Post, User, Follow
-
-from django.views.generic import ListView
+from .models import Follow, Group, Post, User
 
 
 def get_page(objct, page_number, objects_per_page=settings.OBJECTS_PER_PAGE):
     paginator = Paginator(objct, objects_per_page)
     return paginator.get_page(page_number)
-
 
 
 def index(request):
@@ -154,3 +151,62 @@ def profile_unfollow(request, username):
         author=get_object_or_404(User, username=username),
     ).delete()
     return redirect('posts:profile', username)
+
+
+# -----------
+# from django.views.generic import ListView, DetailView
+
+# path('', views.Index.as_view(), name='index'),
+# class Index(ListView):  # работает
+#     model = Post
+#     template_name = 'posts/index.html'
+#     paginate_by = settings.OBJECTS_PER_PAGE
+
+# path('group/<slug:slug>/', views.Group_posts.as_view(), name='group_list'),
+# class Group_posts(ListView): # работает
+#     template_name = 'posts/group_list.html'
+#     paginate_by = settings.OBJECTS_PER_PAGE
+
+#     def get_queryset(self):
+#         group = get_object_or_404(Group, slug=self.kwargs['slug']) # !!!!!
+#         return group.posts.all()
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         slug = self.kwargs['slug']
+#         context['group'] = get_object_or_404(Group, slug=slug) # !!!!!
+#         return context
+
+# path('profile/<str:username>/', views.Profile.as_view(), name='profile'),
+# class Profile(DetailView): # не работает
+#     model = User
+#     template_name = 'posts/profile.html'
+#     paginate_by = settings.OBJECTS_PER_PAGE
+#     slug_url_kwarg = 'username'
+#     context_object_name = 'author'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         following = False
+#         print(self.kwargs['username'])
+#         author = get_object_or_404(User, username=self.kwargs['username'])
+#         user_posts = author.posts.all()
+#         context['following'] = following
+#         return context
+
+
+# path('posts/<int:post_id>/', views.Post_detail.as_view(), name='post_detail')
+# class Post_detail(DetailView):  # работает
+#     model = Post
+#     template_name = 'posts/post_detail.html'
+#     paginate_by = settings.OBJECTS_PER_PAGE
+#     pk_url_kwarg = 'post_id'
+#     context_object_name = 'post'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['form'] = CommentForm()
+#         post = get_object_or_404(Post, pk=self.kwargs['post_id']) # !!!!!
+#         #post = self.kwargs.get('post')
+#         context['comments'] = post.comments.all()
+#         return context

@@ -105,6 +105,7 @@ class PostViewTest(ViewTest):
     def setUp(self):
         super().setUp()
         self.guest_client = Client()
+        cache.clear()
 
     def test_templates(self):
         '''view-функции используют правильные html-шаблоны'''
@@ -299,7 +300,7 @@ class PaginatorTest(ViewTest):
         ]
 
         posts_count_in_db = Post.objects.count()
-        tested_pages_count = 5
+        tested_pages_count = 2
         for url in urls:
             with self.subTest(url=url):
                 for i in range(1, tested_pages_count + 1):
