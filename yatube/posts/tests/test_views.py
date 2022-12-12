@@ -96,7 +96,6 @@ class PostViewTest(ViewTest):
         cls.POST_CREATE_EDIT_HTML = 'posts/create_post.html'
         cls.FOLLOW_INDEX_HTML = 'posts/follow.html'
 
-
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
