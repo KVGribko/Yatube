@@ -41,6 +41,7 @@ class PostURLTest(TestCase):
         cls.UNEXISTING_PAGE = '/unexisting_page/'
         cls.POST_EDIT = f'/posts/{cls.post.id}/edit/'
         cls.CREATE = '/create/'
+        cls.FOLLOW = '/follow/'
 
     def setUp(self):
         self.guest_client = Client()
@@ -72,6 +73,7 @@ class PostURLTest(TestCase):
             self.POST_EDIT: 'posts/create_post.html',
             self.CREATE: 'posts/create_post.html',
             self.UNEXISTING_PAGE: 'core/404.html',
+            self.FOLLOW: 'posts/follow.html'
         }
 
         for url, template in url_templates_names.items():
@@ -85,15 +87,22 @@ class PostURLTest(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_creating_post_avalible_to_an_authorized_user(self):
-        '''Страница создания поста доступна авторизованному пользлователю'''
-        response = self.authorized_client.get(self.CREATE)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        '''Страница доступна авторизованному пользлователю'''
+        urls = [
+            self.CREATE,
+            self.FOLLOW,
+        ]
+        for url in urls:
+            with self.subTest(url=url):
+                response = self.authorized_client.get(url)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_redirect_anonymous_user(self):
         '''Проверка редиректа анонимного пользоватял на страницу логина'''
         urls = [
             self.POST_EDIT,
-            self.CREATE
+            self.CREATE,
+            self.FOLLOW,
         ]
         redirect_url = '/auth/login/'
         for url in urls:

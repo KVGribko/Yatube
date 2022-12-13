@@ -214,23 +214,6 @@ class PostViewTest(ViewTest):
                 page_obj = response.context[self.CONTEXT]
                 self.assertNotIn(new_post, page_obj)
 
-    def test_commet_create(self):
-        '''Проверка создания комменатрия'''
-        commets_count = self.post.comments.count()
-        comment = Comment.objects.create(
-            text='комментарий',
-            author=self.user,
-            post=self.post,
-        )
-        self.assertEqual(self.post.comments.count(), commets_count + 1)
-        self.assertTrue(
-            Comment.objects.filter(
-                text=comment.text,
-                author=self.user,
-                post=self.post,
-            ).exists()
-        )
-
     def test_index_cache(self):
         '''Проверка кэширования главной страницы'''
         post_count = Post.objects.count()
@@ -339,7 +322,6 @@ class FollowingTest(TestCase):
             'posts:profile_unfollow',
             kwargs={'username': cls.author.username},
         )
-
         cls.FOLLOW_INDEX = reverse('posts:follow_index')
         cls.CONTEXT = 'page_obj'
 
@@ -357,25 +339,20 @@ class FollowingTest(TestCase):
         follow_count = Follow.objects.count()
 
         self.follower_client.get(self.FOLLOW)
-
         self.assertEqual(Follow.objects.count(), follow_count + 1)
-        self.assertTrue(
-            Follow.objects.filter(
-                user=self.follower,
-                author=self.author,
-            ).exists()
-        )
+
+        following_from_db = self.follower.follower.first()
+        self.assertEqual(following_from_db.user, self.follower)
+        self.assertEqual(following_from_db.author, self.author)
 
     def test_unfollow(self):
         '''Проверка отписки'''
         follow_count = Follow.objects.count()
 
         self.follower_client.get(self.FOLLOW)
-
         self.assertEqual(Follow.objects.count(), follow_count + 1)
 
         self.follower_client.get(self.UNFOLLOW)
-
         self.assertEqual(Follow.objects.count(), follow_count)
 
         self.assertFalse(
@@ -391,14 +368,11 @@ class FollowingTest(TestCase):
             user=self.follower,
             author=self.author,
         )
-
         new_post = Post.objects.create(
             author=self.author,
             text='Пост для проверки подписки',
         )
-
         response = self.follower_client.get(self.FOLLOW_INDEX)
-
         self.assertIn(new_post, response.context[self.CONTEXT])
 
     def test_unfollow_post(self):
@@ -407,14 +381,11 @@ class FollowingTest(TestCase):
             author=self.author,
             text='Пост для проверки подписки',
         )
-
         self.assertFalse(
             Follow.objects.filter(
                 user=self.follower,
                 author=self.author,
             ).exists()
         )
-
         response = self.follower_client.get(self.FOLLOW_INDEX)
-
         self.assertNotIn(new_post, response.context[self.CONTEXT])

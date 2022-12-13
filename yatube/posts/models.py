@@ -16,6 +16,10 @@ class Group(models.Model):
         help_text='введите описание группы',
     )
 
+    class Meta:
+        verbose_name = 'группа'
+        verbose_name_plural = 'группы'
+
     def __str__(self):
         return self.title
 
@@ -100,7 +104,7 @@ class Follow(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'user'],
-                name='unique_following'
+                name='unique following'
             ),
             models.CheckConstraint(
                 check=~models.Q(user=models.F('author')),

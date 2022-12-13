@@ -12,17 +12,10 @@
     <h1>{{ group.title }}</h1>
     <p>{{ group.description }}</p>
     <article>
-      {% for post in page_obj %}
-        <div class="container col-lg-9 col-sm-12">
-          {% include 'posts/includes/post_list.html' %}
-          {% if post.group %}
-            <a href="{% url 'posts:group_list' post.group.slug %}">
-              все записи группы
-            </a>
-          {% endif %}
-          {% if not forloop.last %}<hr>{% endif %}
-        </div>
-      {% endfor %}
+      {% comment %}
+      {% for post in page_obj %}{% endfor %}
+      {% endcomment %}
+      {% include 'posts/includes/post_list.html' %}
     </article>
   </div>
   {% include 'posts/includes/paginator.html' %}

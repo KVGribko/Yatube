@@ -88,14 +88,11 @@ class FormsPostsTest(FormsTest):
         self.assertRedirects(response, self.POST_PROFILE)
         self.assertEqual(Post.objects.count(), post_count + 1)
 
-        self.assertTrue(
-            Post.objects.filter(
-                text=new_post['text'],
-                group=None,
-                author=new_post['author'],
-                image=f"posts/{new_post['image']}",
-            ).exists()
-        )
+        new_post_from_db = self.user.posts.first()
+        self.assertEqual(new_post_from_db.text, new_post['text'])
+        self.assertIsNone(new_post_from_db.group)
+        self.assertEqual(new_post_from_db.author, self.user)
+        self.assertEqual(new_post_from_db.image, f"posts/{new_post['image']}")
 
     def test_edit_post(self):
         '''Проверка редактирования поста'''
@@ -141,14 +138,6 @@ class FormsPostsTest(FormsTest):
                              )
         self.assertEqual(Post.objects.count(), post_count)
 
-        self.assertFalse(
-            Post.objects.filter(
-                text=new_post['text'],
-                group=None,
-                author=new_post['author'],
-            ).exists()
-        )
-
 
 class TestComments(FormsTest):
     @classmethod
@@ -181,13 +170,11 @@ class TestComments(FormsTest):
         )
         self.assertRedirects(response, self.POST_DETAIL)
         self.assertEqual(self.post.comments.count(), commets_count + 1)
-        self.assertTrue(
-            Comment.objects.filter(
-                text=comments['text'],
-                author=self.user,
-                post=self.post,
-            ).exists()
-        )
+
+        comment_from_db = self.post.comments.first()
+        self.assertEqual(comment_from_db.text, comments['text'])
+        self.assertEqual(comment_from_db.author, self.user)
+        self.assertEqual(comment_from_db.post, self.post)
 
     def test_unauthorized_user_cannot_create_comment(self):
         '''Неавторизованный пользователь не может оставить комментарий'''
@@ -210,13 +197,6 @@ class TestComments(FormsTest):
                              )
                              )
         self.assertEqual(self.post.comments.count(), commets_count)
-        self.assertFalse(
-            Comment.objects.filter(
-                text=comments['text'],
-                author=self.user,
-                post=self.post,
-            ).exists()
-        )
 
     def test_comment_display(self):
         '''Проверка отображения комментария на сранице'''
